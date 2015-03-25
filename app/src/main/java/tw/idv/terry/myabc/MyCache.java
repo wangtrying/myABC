@@ -2,7 +2,6 @@ package tw.idv.terry.myabc;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 
 import tw.idv.terry.myabc.utils.MyLog;
 
@@ -25,9 +24,10 @@ public class MyCache {
 
         final static int MEGABYTE = 1024 * 1024;
         final static int DEFAULT_MEMORY_CACHE_SIZE = 3; // 3 MB
+        final static int DEFAULT_MEMORY_CACHE_LOWERWATERMARK = 1; // 1MB
 
         private Context mContext;
-        private int mMemCacheSize;
+        private int mMemCacheSize, mMemCacheLowerMark;
 
 
 
@@ -35,11 +35,17 @@ public class MyCache {
         public Builder(final Context aContext) {
             mContext = aContext;
             mMemCacheSize = DEFAULT_MEMORY_CACHE_SIZE * MEGABYTE;
+            mMemCacheLowerMark = DEFAULT_MEMORY_CACHE_LOWERWATERMARK * MEGABYTE;
         }
 
         public Builder(final Context aContext, final int aMemoryCacheSizeInMegaBytes) {
             mContext = aContext;
-            mMemCacheSize = aMemoryCacheSizeInMegaBytes;
+            mMemCacheLowerMark = DEFAULT_MEMORY_CACHE_LOWERWATERMARK* MEGABYTE;
+            if (aMemoryCacheSizeInMegaBytes < DEFAULT_MEMORY_CACHE_LOWERWATERMARK){
+                mMemCacheSize = DEFAULT_MEMORY_CACHE_LOWERWATERMARK;
+            }else {
+                mMemCacheSize = aMemoryCacheSizeInMegaBytes;
+            }
         }
 
 
@@ -47,7 +53,7 @@ public class MyCache {
             MyLog.v(TAG, "entering build");
 
             MyCache cache = new MyCache();
-            cache.mMemoryCache = new MemoryCache(mMemCacheSize);
+            cache.mMemoryCache = new MemoryCache(mMemCacheSize, mMemCacheLowerMark);
 
             return cache;
         }
