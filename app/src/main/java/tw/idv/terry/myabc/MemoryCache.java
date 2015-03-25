@@ -1,10 +1,9 @@
 package tw.idv.terry.myabc;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.util.LruCache;
 
-import java.util.concurrent.Callable;
+import org.apache.solr.util.ConcurrentLRUCache;
+
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -15,10 +14,13 @@ import java.util.concurrent.FutureTask;
  */
 public class MemoryCache {
 
-    private LruCache<String, Future<Bitmap>> mMemCache;
+    private ConcurrentLRUCache<String, Future<Bitmap>> mMemCache;
+//    private LruCache<String, Future<Bitmap>> mMemCache;
+    //private ConcurrentLRUCache<String ,Future<Bitmap>> mLruCache = new ConcurrentLRUCache<String, Future<Bitmap>>();
 
-    public MemoryCache(final int mMemCacheSize) {
-        mMemCache = new LruCache<>(mMemCacheSize);
+    public MemoryCache(final int aMemCacheSize, int aMemCacheLowerMark) {
+        mMemCache = new ConcurrentLRUCache<String, Future<Bitmap>>(aMemCacheSize, aMemCacheLowerMark);
+//        mMemCache = new LruCache<>(mMemCacheSize);
     }
 
     public synchronized Bitmap get(final String aPath, final int aWidth, final int aHeight) {
